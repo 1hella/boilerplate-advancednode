@@ -30,6 +30,11 @@ module.exports = function (app, myDataBase) {
         passport.authenticate('github')
     )
 
+    app.route('/auth/github/callback').get(passport.authenticate('github', {
+        failureRedirect: "/",
+        successRedirect: "/profile"
+    }))
+
     app.route('/logout')
         .get((req, res) => {
             req.logout();
