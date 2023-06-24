@@ -1,5 +1,6 @@
 const { ObjectID } = require('mongodb')
 const LocalStrategy = require('passport-local');
+const GitHubStrategy = require('passport-github');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 module.exports = function (app, myDataBase) {
@@ -21,5 +22,20 @@ module.exports = function (app, myDataBase) {
             if (!bcrypt.compareSync(password, user.password)) return done(null, false);
             return done(null, user);
         })
-    }))
+    }));
+
+    passport.use(new GitHubStrategy({
+        clientID: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: "/auth/github/callback"
+    },
+        (accessToken, refreshToken, profile, done) => {
+            myDatabase.findOne({ username: profile.id }, (err, user) => {
+                console.log(`User ${username} attempted to log in`);
+                if (err) return done(err);
+                if (!user) return done(null, false);
+                return done(null, user);
+            })
+        }
+    ))
 }

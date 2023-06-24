@@ -14,7 +14,8 @@ module.exports = function (app, myDataBase) {
             title: "Connected to Database",
             message: "Please log in",
             showLogin: true,
-            showRegistration: true
+            showRegistration: true,
+            showSocialAuth: true
         });
     });
 
@@ -24,6 +25,10 @@ module.exports = function (app, myDataBase) {
             res.redirect('/profile');
         }
     );
+
+    app.route('/auth/github').get(
+        passport.authenticate('github')
+    )
 
     app.route('/logout')
         .get((req, res) => {
